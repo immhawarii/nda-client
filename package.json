@@ -1,0 +1,16 @@
+{
+  "name": "aplikasi-data-pengunjung",
+  "version": "1.0.0",
+  "description": "aplikasi untuk menerima data data pengunjung",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "npm"
+  ],
+  "author": "nur imam hawari akbar",
+  "license": "ISC"
+}
