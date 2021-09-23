@@ -33,7 +33,6 @@ userForm.addEventListener("submit", function(e){
     },
     success: function (result) {
         // element is div holding the ParticalView
-        console.log(result)
         if(result.error)
         {
           iziToast.error({

@@ -36,7 +36,7 @@ async function getData(urlData){
     beforeSend: function () {
         document.getElementById("overlay").removeAttribute("hidden");
     },
-    success: function (result) {
+    success: function (result) {      
       var headTable = `
       <div class="table-responsive">
         <table class="table table-striped" id="table-1">
