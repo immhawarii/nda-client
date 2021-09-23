@@ -1,4 +1,5 @@
 "use strict";
+
 var guestID = ''
 var urlData = ''
 
@@ -29,6 +30,8 @@ const getCookie = (cookie_name) =>{
 
 var signImage = '';
 var ktpImage = '';
+
+// var element = {}, dataPrint = [];
 
 async function getData(id, urlData){
   await $.ajax({
@@ -68,6 +71,19 @@ async function getData(id, urlData){
       document.getElementById("image-preview").style.backgroundSize = "cover"
       document.getElementById("image-preview").style.backgroundPosition = "center center"
       ktpImage = result.data.ktpImage
+
+      // const d = new Date();
+      // const months = ["Januari","Februari","Maret","April","Mai","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+      
+      // element.ktp = `${urlData}uploads/ktp/${result.data.ktpImage}`
+      // element.sign = `${urlData}uploads/ttd/${result.data.signImage}`
+      // element.name = result.data.name
+      // element.date = `Bandung, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`
+      // element.number_form = `${d.getFullYear()}/${result.data.sr_number}/e-Gov`
+      // element.sr_number = result.data.sr_number
+      // dataPrint.push(element)
+
+      // console.log(dataPrint)
 
     },
     complete: function () {
