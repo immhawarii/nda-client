@@ -198,7 +198,7 @@ async function deleteUser(id){
       complete: function (responseJSON) {
         setTimeout(() => {
           window.location.reload();
-        }, 3000)
+        }, 1000)
       },
       error: function (xhr, status, p3, p4) {
           var err = "Error " + " " + status + " " + p3 + " " + p4;

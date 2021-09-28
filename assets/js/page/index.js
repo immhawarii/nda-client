@@ -320,7 +320,6 @@ function guestById(id){
 function printPDF(){
   //Open new dialog window
   var myWindow=window.open('','','width=1200,height=1000');
-    
   //Generate string html file
     var sHtml = `<div id='content'>
           <p align='right' style='font-family: Arial; font-size: 13px'>
@@ -420,9 +419,6 @@ function printPDF(){
             <p id="fullDate" style="margin:0;padding:0">
             ${dataPrint[0].date}
             </p>
-            <p style="margin:0;padding:0">
-            ${dataPrint[0].name}
-            </p>
             <div>
             <img src='${dataPrint[0].sign}' style='max-width:250px;
             max-height:170px;
@@ -430,9 +426,10 @@ function printPDF(){
             height:auto;'>
             </div>
             <br>
-            <span style='width: 100px;'>Tanda Tangan: </span>            
-            </td>
-            <td style='width: 50%; padding-left: 200px;'><img src='${dataPrint[0].ktp}' style='max-width:290px; max-height:185px; width:auto; height:auto;'></td>
+            <p style="margin:0;padding:0">
+            ${dataPrint[0].name}
+            </p>
+            <td style='width: 50%; padding-left: 150px;'><img src='${dataPrint[0].ktp}' style='max-width:290px; max-height:185px; width:auto; height:auto;'></td>
           </tr>
           </table>
         </div>`;
@@ -444,8 +441,10 @@ function printPDF(){
     //Sets focus to the current window
     myWindow.focus();
     //Prints the contents of the current window.
-    myWindow.print();
+    setTimeout(function(){ 
+      myWindow.print();
+      myWindow.close();
+    }, 1500);
     //Closes the current window
-    myWindow.close();
       
 }
