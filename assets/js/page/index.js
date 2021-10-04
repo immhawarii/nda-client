@@ -1,9 +1,25 @@
 "use strict";
 
 var urlData = ''
+
+const getCookie = (cookie_name) =>{
+  // Construct a RegExp object as to include the variable name
+  const re = new RegExp(`(?<=${cookie_name}=)[^;]*`);
+  try{
+    return document.cookie.match(re)[0];	// Will raise TypeError if cookie is not found
+  }catch{
+    return "Who Are You?";
+  }
+}
+
 window.onload = function() {
-  if(document.cookie.length > 0 )
+  if(getCookie('session') != 'Who Are You?')
   {
+    if(getCookie("role") == "false"){
+      document.getElementById("userMenu").setAttribute("hidden", true);
+    }else{
+      document.getElementById("userMenu").removeAttribute("hidden");
+    }
     fetch("../env.json")
         .then(response => response.json())
         .then(json => urlData = json[0].local_url)
@@ -16,15 +32,6 @@ window.onload = function() {
   }
 };
 
-const getCookie = (cookie_name) =>{
-  // Construct a RegExp object as to include the variable name
-  const re = new RegExp(`(?<=${cookie_name}=)[^;]*`);
-  try{
-    return document.cookie.match(re)[0];	// Will raise TypeError if cookie is not found
-  }catch{
-    return "this-cookie-doesn't-exist";
-  }
-}
 async function getData(urlData){
   await $.ajax({
     url: urlData + 'guest/getAll',
@@ -72,11 +79,31 @@ async function getData(urlData){
               </td>
               <td>
                 <div class="buttons">
-                ${getCookie("role") == "true" ? `<button class="btn btn-primary btn-sm btn-icon mr-2" id="detailBtn" data-toggle="tooltip" title="Export PDF" onClick="guestById(${element.id})"><i class="fas fa-list-alt fa-sm" style=" color:white"></i></button>
-                <button class="btn btn-info btn-sm btn-icon  mr-1" id="editBTn" data-toggle="tooltip" title="Edit" data-original-title="Edit" onClick="openEditForm(${element.id})"><i class="fas fa-pencil-alt fa-sm" style=" color:white"></i></button>
-                <button class="btn btn-danger btn-sm btn-icon" data-toggle="tooltip" title="Delete" onClick="deleteNDA(${element.id})"><i class="fas fa-trash fa-sm" style=" color:white"></i></button>` : 
-                `<button class="btn btn-primary btn-sm btn-icon mr-2" id="detailBtn" data-toggle="tooltip" title="Export PDF" onClick="guestById(${element.id})"><i class="fas fa-list-alt fa-sm" style=" color:white"></i></button>
-                <button class="btn btn-info btn-sm btn-icon  mr-1" id="editBTn" data-toggle="tooltip" title="Edit" data-original-title="Edit" onClick="openEditForm(${element.id})"><i class="fas fa-pencil-alt fa-sm" style=" color:white"></i></button>`}
+                ${getCookie("role") == "true" ? 
+                  `
+                    <div>
+                      ${element.departureTime == null || element.departureTime == 'None'?
+                        `
+                          <button class="btn btn-primary btn-sm btn-icon mr-2" id="detailBtn" data-toggle="tooltip" title="Absen Pulang" onClick="AbsenConfirm(${element.id})"><i class="fas fa-bell fa-sm" style=" color:white"></i></button>
+                        `:
+                        `
+                          <button class="btn btn-primary btn-sm btn-icon mr-2" id="detailBtn" data-toggle="tooltip" title="Absen Pulang" onClick="AbsenConfirm(${element.id})" disabled><i class="fas fa-bell fa-sm" style=" color:white"></i></button>
+                        ` 
+                      }
+                      <a href="#" data-toggle="dropdown" class="btn btn-sm btn-info dropdown-toggle" aria-expanded="false">More</a>
+                      <ul class="dropdown-menu dropdown-menu-sm dropdown-menu-right" x-placement="bottom-end" style="position: absolute; transform: translate3d(75px, 31px, 0px); top: 0px; left: 0px; will-change: transform;">
+                        <li><a href="javascript:openEditForm(${element.id})" class="dropdown-item">Edit</a></li>
+                        <li><a href="javascript:guestById(${element.id})" class="dropdown-item">Export NDA</a></li>
+                        <li><a href="javascript:deleteNDA(${element.id})" class="dropdown-item">Delete</a></li>
+                      </ul>
+                    </div>
+                  ` 
+                    : 
+                  `
+                    <button class="btn btn-primary btn-sm btn-icon mr-2" id="detailBtn" data-toggle="tooltip" title="Export PDF" onClick="guestById(${element.id})"><i class="fas fa-list-alt fa-sm" style=" color:white"></i></button>
+                    <button class="btn btn-info btn-sm btn-icon  mr-1" id="editBTn" data-toggle="tooltip" title="Edit" data-original-title="Edit" onClick="openEditForm(${element.id})"><i class="fas fa-pencil-alt fa-sm" style=" color:white"></i></button>
+                  `
+                }
                 </div>
               </td>
             </tr>
@@ -138,7 +165,7 @@ async function deleteNDA(id){
         document.getElementById("overlay").setAttribute("hidden", false);
         setTimeout(() => {
           window.location.reload();
-        }, 5000)
+        }, 1500)
       },
       error: function (xhr, status, p3, p4) {
           var err = "Error " + " " + status + " " + p3 + " " + p4;
@@ -151,7 +178,7 @@ async function deleteNDA(id){
           })
           setTimeout(() => {
             window.location.reload();
-          }, 5000)
+          }, 1500)
           return false;
       }
     });
@@ -191,77 +218,68 @@ function openEditForm(id){
   });  
 }
 
-function editFormData(id){
-  $('#editFormData').on("submit", function(e){
-    e.preventDefault()
-    var nama = document.getElementById('nameEdit').value
-    var email = document.getElementById('emailEdit').value
-    var nik = document.getElementById('nikEdit').value
-    var instansi =  document.getElementById('instansiEdit').value
-    var phone =  document.getElementById('phonenumberEdit').value
-    var kepKunjungan =  document.getElementById('kepKunjunganEdit').value
-    var wKedatangan =  document.getElementById('waktukedatanganEdit').value
-    var wKepulangan =  document.getElementById('waktukepulanganEdit').value
-    // var ktpImage =  document.getElementById('waktukepulanganEdit').value
-    // var signImage =  document.getElementById('waktukepulanganEdit').value
-    //Obj of data to send in future like a dummyDb
 
-    const data = { 
-      name:nama.toUpperCase(),
-      email:email,
-      nik:String(nik),
-      institution:instansi.toUpperCase(),
-      phoneNumber:String(phone).trim(),
-      visitReason:kepKunjungan,
-      arrivalTime:wKedatangan,
-      departureTime:wKepulangan,
-      ktpImage:ktpImgName, //
-      signImage:ttdImage
-    };
-
+function AbsenConfirm(id)
+{
+  var x = confirm("Apakah anda yakin?");
+  if (x)
+  {
+    var departureTime = new Date().toISOString().slice(0, 10) + " " + new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric", second: "numeric"})
     $.ajax({
-    url: `${urlData}/guest/update/` + id,
-    type: 'PUT',
-    data: JSON.stringify(data),
-    contentType: 'application/json',
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Authorization": getCookie("session")
-    },
-    beforeSend: function () {
-        document.getElementById("overlay").removeAttribute("hidden");
-    },
-    success: function (result) {
-        // element is div holding the ParticalView
-        $('#editUserModal').modal('hide');
-        document.getElementById("overlay").setAttribute("hidden", false);
-        iziToast.success({
-          title: 'Update Data Successfully',
-          message: `Data with name ${result.name} has been updated`,
-          position: 'topRight'
-        })
-    },
-    complete: function (responseJSON) {
-      setTimeout(() => {
-        window.location.reload()
-      }, 5000)
-    },
-    error: function (xhr, status, p3, p4) {
-        var err = "Error " + " " + status + " " + p3 + " " + p4;
-        if (xhr.responseText && xhr.responseText[0] == "{")
-            err = JSON.parse(xhr.responseText).Message;
-        iziToast.error({
-          title: 'Update Data Unsuccessfully',
-          message: `${err}`,
-          position: 'topRight'
-        })
-        $('#addUserModal').modal('hide');
-        window.location.reload()
-        return false;
-    }
-  });
-  }); 
+      url: `${urlData}/guest/departureAbsen/` + id,
+      type: 'PUT',
+      contentType: 'application/json',
+      headers: {
+        "Authorization": getCookie("session")
+      },
+      data: JSON.stringify({
+                "departureTime" : departureTime
+              }),
+      beforeSend: function () {
+          document.getElementById("overlay").removeAttribute("hidden");
+      },
+      success: function (result) {
+          // element is div holding the ParticalView
+          if(result.message)
+          {
+            document.getElementById("overlay").setAttribute("hidden", false);
+            iziToast.success({
+              title: 'Absen Pulang Berhasil',
+              message: `Data with name ${result.data.name} has been updated`,
+              position: 'topRight'
+            })
+          }
+          else
+            iziToast.error({
+              title: 'Absen Pulang Gagal',
+              message: `${err}`,
+              position: 'topRight'
+            })
+            
+      },
+      complete: function (responseJSON) {
+        setTimeout(() => {
+          window.location.reload()
+        }, 1500)
+      },
+      error: function (xhr, status, p3, p4) {
+          var err = "Error " + " " + status + " " + p3 + " " + p4;
+          if (xhr.responseText && xhr.responseText[0] == "{")
+              err = JSON.parse(xhr.responseText).Message;
+          iziToast.error({
+            title: 'Update Data Unsuccessfully',
+            message: `${err}`,
+            position: 'topRight'
+          })
+          window.location.reload()
+          return false;
+      }
+    });
+  }
+  else
+    return false;
 }
+
 
 function closeModal(){
   $('#editModal').modal("hide")
@@ -317,6 +335,9 @@ function guestById(id){
   printPDF()
 }
 
+function absenPulang(){
+
+}
 function printPDF(){
   //Open new dialog window
   var myWindow=window.open('','','width=1200,height=1000');

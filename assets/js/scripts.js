@@ -70,16 +70,29 @@ function usermenuAuth(){
     window.location.replace("errors-403.html")
   }
 }
+
+// window.onbeforeunload = function(e) {
+//   return 'Please press the Logout button to logout.';
+// };
+
+// function closeWindow (e){
+//   document.cookie = 'session' +'=; expires=Thu, 01-Jan-70 00:00:01 GMT;';
+//   document.cookie = 'user name' +'=; expires=Thu, 01-Jan-70 00:00:01 GMT;';
+//   document.cookie = 'role' +'=; expires=Thu, 01-Jan-70 00:00:01 GMT;';
+// }
+
+// window.onbeforeunload = function(e) {
+//   closeWindow()
+// };
 // Global
 $(function() {
-  
   const getCookie = (cookie_name) =>{
     // Construct a RegExp object as to include the variable name
     const re = new RegExp(`(?<=${cookie_name}=)[^;]*`);
     try{
       return document.cookie.match(re)[0];	// Will raise TypeError if cookie is not found
     }catch{
-      return "this-cookie-doesn't-exist";
+      return "Who Are You?";
     }
   }
   document.getElementById("username").innerHTML = getCookie("user name")

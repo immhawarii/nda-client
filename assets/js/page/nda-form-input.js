@@ -1,18 +1,6 @@
 "use strict";
 
 var urlData = ''
-$(function() {
-  document.getElementById("waktuKedatangan").value = "";
-  document.getElementById("waktuKepulangan").value = "";
-  fetch("../env.json")
-    .then(response => response.json())
-    .then(json => urlData = json[0].local_url);
-});
-
-function resetForm() {
-  document.getElementById("example-form").reset();
-  document.getElementById('image-preview').style.backgroundImage='';
-}
 
 const getCookie = (cookie_name) =>{
   // Construct a RegExp object as to include the variable name
@@ -20,9 +8,47 @@ const getCookie = (cookie_name) =>{
   try{
     return document.cookie.match(re)[0];	// Will raise TypeError if cookie is not found
   }catch{
-    return "this-cookie-doesn't-exist";
+    return "Who Are You?";
   }
 }
+
+$(function() {
+  if(getCookie('session') != 'Who Are You?'){
+    if(getCookie('role') == 'false'){
+      document.getElementById("userMenu").setAttribute("hidden", true);
+    }else{
+      document.getElementById("userMenu").removeAttribute("hidden");
+    }
+    fetch("../env.json")
+      .then(response => response.json())
+      .then(json => urlData = json[0].local_url);
+    
+    // document.getElementById("waktuKepulangan").value = "";
+  }else{
+    location.replace("auth-login.html")
+  }
+});
+
+function resetForm() {
+  document.getElementById("example-form").reset();
+  document.getElementById('image-preview').style.backgroundImage='';
+}
+
+$('#kepKunjungan').change(function () {
+  var optionSelected = $(this).find("option:selected");
+  var valueSelected  = optionSelected.val();
+  var textSelected   = optionSelected.text();
+  if (valueSelected == 'Lainnya'){
+    document.getElementById('kepKunjunganArea').removeAttribute('hidden');
+    document.getElementById('kepKunjunganArea').setAttribute('required', true);
+  }
+  else{
+    document.getElementById('kepKunjunganArea').setAttribute('hidden', true)
+    document.getElementById('kepKunjunganArea').removeAttribute('required')
+  }
+  
+});
+
 
 const exampleForm = document.getElementById("example-form");
 exampleForm.addEventListener("submit", function(e){  
@@ -128,9 +154,15 @@ exampleForm.addEventListener("submit", function(e){
   var nik = document.getElementById('nikNumber').value
   var instansi =  document.getElementById('instansi').value
   var phone =  document.getElementById('phoneNumber').value
-  var kepKunjungan =  document.getElementById('kepKunjungan').value
-  var wKedatangan =  document.getElementById('waktuKedatangan').value
-  var wKepulangan =  document.getElementById('waktuKepulangan').value
+  var kepKunjungan = ''
+  if(document.getElementById('kepKunjungan').value == 'Lainnya'){
+    kepKunjungan = document.getElementById('kepKunjunganArea').value
+  }else{
+    kepKunjungan = document.getElementById('kepKunjungan').value
+  }
+  // var wKedatangan =  document.getElementById('waktuKedatangan').value
+  // var wKepulangan =  document.getElementById('waktuKepulangan').value
+  var datetimenow = new Date().toISOString().slice(0, 10) + " " + new Date().toLocaleTimeString('en-US', { hour12: false, hour: "numeric", minute: "numeric", second: "numeric"})
   //Obj of data to send in future like a dummyDb
 
   var ktpName = ktpImgName;
@@ -143,8 +175,8 @@ exampleForm.addEventListener("submit", function(e){
     institution:instansi,
     phoneNumber:String(phone).trim(),
     visitReason:kepKunjungan,
-    arrivalTime:wKedatangan,
-    departureTime:wKepulangan,
+    arrivalTime:datetimenow,
+    departureTime:'',
     ktpImage:String(ktpImgName), //
     signImage:String(ttdImgName)
   };
@@ -172,7 +204,7 @@ exampleForm.addEventListener("submit", function(e){
         })
         setTimeout(() => {
           window.location.replace("index.html")
-        }, 3000)
+        }, 1500)
     },
     complete: function (responseJSON) {
       document.getElementById("overlay").setAttribute("hidden", false);
@@ -189,7 +221,7 @@ exampleForm.addEventListener("submit", function(e){
     })        
     setTimeout(() => {
       window.location.replace("nda-form-input.html")
-    }, 3000)        
+    }, 1500)        
     return false;
   });
 });
@@ -198,7 +230,6 @@ exampleForm.addEventListener("submit", function(e){
 // section library function
 
 
-$("select").selectric();
 $.uploadPreview({
   input_field: "#image-upload",   // Default: .image-upload
   preview_box: "#image-preview",  // Default: .image-preview
@@ -209,7 +240,6 @@ $.uploadPreview({
   success_callback: null          // Default: null
 });
 
-$("select").selectric();
 $.uploadPreview({
   input_field: "#ttd-upload",   // Default: .image-upload
   preview_box: "#ttd-preview",  // Default: .image-preview

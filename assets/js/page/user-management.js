@@ -1,14 +1,6 @@
 "use strict";
 
 var urlData = ''
-$(function() {
-  fetch("../env.json")
-  .then(response => response.json())
-  .then(json => urlData = json[0].local_url)
-  .then(function(){
-    getData(urlData)
-  });
-});
 
 const getCookie = (cookie_name) =>{
   // Construct a RegExp object as to include the variable name
@@ -16,9 +8,28 @@ const getCookie = (cookie_name) =>{
   try{
     return document.cookie.match(re)[0];	// Will raise TypeError if cookie is not found
   }catch{
-    return "this-cookie-doesn't-exist";
+    return "Who Are You?";
   }
 }
+
+$(function() {
+  if(getCookie('session') != 'Who Are You?'){
+    if(getCookie('role') == 'false'){
+      document.getElementById("userMenu").setAttribute("hidden", true);
+    }else{
+      document.getElementById("userMenu").removeAttribute("hidden");
+    }
+    fetch("../env.json")
+    .then(response => response.json())
+    .then(json => urlData = json[0].local_url)
+    .then(function(){
+      getData(urlData)
+    });
+  }else{
+    location.replace("auth-login.html")
+  }
+});
+
 
 async function getData(urlData){
   
@@ -97,6 +108,14 @@ async function getData(urlData){
   });
 }
 
+
+$('#userConfirm').on('keyup', function () {
+  if ($('#userPassword').val() == $('#userConfirm').val()) {
+    $('#message').html('Matching').css('color', 'green');
+  } else 
+    $('#message').html('Not Matching').css('color', 'red');
+});
+
 const userForm = document.getElementById("userFormData");
 userForm.addEventListener("submit", function(e){  
   e.preventDefault();
@@ -115,6 +134,10 @@ userForm.addEventListener("submit", function(e){
     role: userRole == "Admin" ? false : true
   };
 
+  if($('#message').text() == 'Not Matching'){
+    alert('Confirmation password is not match')
+    return false
+  }
   $.ajax({
     url: `${urlData}user/register`,
     type: 'POST',
@@ -145,7 +168,7 @@ userForm.addEventListener("submit", function(e){
           })
           setTimeout(() => {
             window.location.reload()
-          }, 3000)
+          }, 1500)
         }
     },
     complete: function (responseJSON) {
@@ -347,7 +370,7 @@ function editData(id){
       complete: function (responseJSON) {
         setTimeout(() => {
           window.location.reload()
-        }, 3000)
+        }, 1500)
       },
       error: function (xhr, status, p3, p4) {
           var err = "Error " + " " + status + " " + p3 + " " + p4;

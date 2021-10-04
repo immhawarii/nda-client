@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 
   <!-- CSS Libraries -->
-  <link rel="stylesheet" href="../node_modules/selectric/public/selectric.css">
   <link rel="stylesheet" href="../node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.css">  
 
   <link rel="stylesheet" href="../node_modules/select2/dist/css/select2.min.css">
@@ -18,6 +17,7 @@
 
   <link rel="stylesheet" href="../node_modules/bootstrap-daterangepicker/daterangepicker.css">  
   <link rel="stylesheet" href="../node_modules/izitoast/dist/css/iziToast.min.css">
+  <link rel="stylesheet" href="../node_modules/datatables.net-select-bs4/css/select.bootstrap4.min.css">
 
   <!-- Template CSS -->
   <link rel="stylesheet" href="../assets/css/style.css">
@@ -334,10 +334,31 @@
                     <input id="phoneNumber" type="text" class="form-control phone-number" autocomplete="off" name="noHp" placeholder="0896028XXXX" required>
                   </div>
                 </div>
-                <div class="form-group">
+                <!-- <div class="form-group">
+                  <label>Select2</label>
+                  <select class="form-control select2 select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+                    <option>Option 1</option>
+                    <option>Option 2</option>
+                    <option>Option 3</option>
+                  </select><span class="select2 select2-container select2-container--default select2-container--below select2-container--focus" dir="ltr" style="width: 454.5px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-lvme-container"><span class="select2-selection__rendered" id="select2-lvme-container" title="Option 1">Option 1</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+                </div> -->
+                <div class="form-group floating-addon">
+                  <label>Keperluan Kunjungan</label>
+                  <select class="form-control" id="kepKunjungan" name="kepKunjungan" required placholder="--Select Data--">
+                    <option value="" selected>--Select Data--</option>  
+                    <option value="Layanan Colocation">Layanan Colocation</option>
+                    <option value="Pemeliharaan Server">Pemeliharaan Server</option>
+                    <option value="Pemeliharaan Data Center">Pemeliharaan Data Center</option>
+                    <option value="Lainnya">Lainnya</option>
+                  </select>
+                  <div class="form-group">
+                    <textarea id="kepKunjunganArea" class="form-control" style="height: 90px;resize: none; padding-left:20px" name="kepKunjunganArea" hidden></textarea>
+                  </div>
+                </div>
+                <!-- <div class="form-group">
                   <label>Keperluan Kunjungan</label>
                   <textarea id="kepKunjungan" class="form-control" style="height: 90px;" name="kepKunjungan" required style="resize: none;"></textarea>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>
@@ -346,17 +367,6 @@
             <div class="card h-100">
               <div class="card-body">
                 <div class="row">
-                  <div class="form-group col-6 col-md-6 col-lg-6">
-                    <label>Waktu Kedatangan</label>
-                    <input type="text" id="waktuKedatangan" class="form-control datetimepicker" autocomplete="off" name="wKedatangan" required>
-                    <div class="invalid-feedback">
-                      Isi waktu kedatangannya ya, liat jam dinding!
-                    </div>
-                  </div>
-                  <div class="form-group col-6 col-md-6 col-lg-6">
-                    <label>Waktu Kepulangan</label>
-                    <input type="text" id="waktuKepulangan" value="" autocomplete="off" name="wKepulangan" class="form-control datetimepicker" disabled>
-                  </div>
                 </div>
                 <div class="form-group">
                   <input class="btn btn-sm btn-primary sm" type="button" id="buttonModal" value="Buat TTD"  data-toggle="modal" data-target="#exampleModal">
@@ -420,7 +430,6 @@
 
   <!-- JS Libraies -->
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
-  <script src="../node_modules/selectric/public/jquery.selectric.min.js"></script>
   <script src="../node_modules/jquery_upload_preview/assets/js/jquery.uploadPreview.min.js"></script>
   <script src="../node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
 
@@ -430,6 +439,7 @@
   <script src="../node_modules/bootstrap-timepicker/js/bootstrap-timepicker.min.js"></script>
   <script src="../node_modules/select2/dist/js/select2.full.min.js"></script>
   <script src="../node_modules/izitoast/dist/js/iziToast.min.js"></script>
+  <script src="../node_modules/datatables.net-select-bs4/js/select.bootstrap4.min.js"></script>
 
 
   <!-- Template JS File -->

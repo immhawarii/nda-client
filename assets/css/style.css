@@ -2278,6 +2278,13 @@ pre {
   100% {
     background-position: 100% 0; } }
 
+.field-icon {
+  float: right;
+  margin: -25px 10px 0 -25px;
+  position: relative;
+  z-index: 2;
+}
+    
 .overlay-gradient-bottom:after {
   content: ' ';
   position: absolute;

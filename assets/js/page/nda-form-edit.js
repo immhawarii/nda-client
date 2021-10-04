@@ -3,20 +3,6 @@
 var guestID = ''
 var urlData = ''
 
-$(function() {
-  guestID = window.localStorage.getItem('id');
-  fetch("../env.json")
-    .then(response => response.json())
-    .then(json => urlData = json[0].local_url)
-    .then(function(){
-      getData(guestID, urlData)
-    });
-});
-
-function resetForm() {
-  document.getElementById("example-form").reset();
-  document.getElementById('image-preview').style.backgroundImage='';
-}
 
 const getCookie = (cookie_name) =>{
   // Construct a RegExp object as to include the variable name
@@ -24,13 +10,52 @@ const getCookie = (cookie_name) =>{
   try{
     return document.cookie.match(re)[0];	// Will raise TypeError if cookie is not found
   }catch{
-    return "this-cookie-doesn't-exist";
+    return "Who Are You?";
   }
+}
+
+$(function() {
+  if(getCookie('session') != 'Who Are You?'){
+    if(getCookie('role') == 'false'){
+      document.getElementById("userMenu").setAttribute("hidden", true);
+    }else{
+      document.getElementById("userMenu").removeAttribute("hidden");
+    }
+    guestID = window.localStorage.getItem('id');
+    fetch("../env.json")
+      .then(response => response.json())
+      .then(json => urlData = json[0].local_url)
+      .then(function(){
+        getData(guestID, urlData)
+      });
+  }else{
+    location.replace("auth-login.html")
+  }
+});
+
+function resetForm() {
+  document.getElementById("example-form").reset();
+  document.getElementById('image-preview').style.backgroundImage='';
 }
 
 var signImage = '';
 var ktpImage = '';
 
+
+$('#kepKunjungan').change(function () {
+  var optionSelected = $(this).find("option:selected");
+  var valueSelected  = optionSelected.val();
+  var textSelected   = optionSelected.text();
+  if (valueSelected == 'Lainnya'){
+    document.getElementById('kepKunjunganArea').removeAttribute('hidden');
+    document.getElementById('kepKunjunganArea').setAttribute('required', true);
+  }
+  else{
+    document.getElementById('kepKunjunganArea').setAttribute('hidden', true)
+    document.getElementById('kepKunjunganArea').removeAttribute('required')
+  }
+  
+});
 // var element = {}, dataPrint = [];
 
 async function getData(id, urlData){
@@ -43,8 +68,6 @@ async function getData(id, urlData){
     },
     beforeSend: function () {
         document.getElementById("overlay").removeAttribute("hidden");
-        document.getElementById("waktuKedatangan").value = "";
-        document.getElementById("waktuKepulangan").value = "";
     },
     success: function (result) {
       document.getElementById('name').value = result.data.name
@@ -52,9 +75,18 @@ async function getData(id, urlData){
       document.getElementById('nikNumber').value = result.data.nik
       document.getElementById('instansi').value = result.data.institution
       document.getElementById('phoneNumber').value = result.data.phoneNumber
-      document.getElementById('kepKunjungan').value = result.data.visitReason
-      document.getElementById('waktuKedatangan').value = result.data.arrivalTime
-      result.data.departureTime == "None" ? document.getElementById('waktuKepulangan').value = '' : document.getElementById('waktuKepulangan').value = result.data.departureTime
+
+      if(result.data.visitReason == "Layanan Colocation" || result.data.visitReason == "Pemeliharaan Server" || result.data.visitReason == "Pemeliharaan Data Center"){
+        document.getElementById('kepKunjunganArea').setAttribute('hidden', true)
+        document.getElementById('kepKunjunganArea').removeAttribute('required')
+        $('#kepKunjungan').val(result.data.visitReason)
+      }else{
+        document.getElementById('kepKunjunganArea').removeAttribute('hidden');
+        document.getElementById('kepKunjunganArea').setAttribute('required', true);
+        $('#kepKunjungan').val("Lainnya")
+        document.getElementById('kepKunjunganArea').value = result.data.visitReason
+      }
+      // result.data.departureTime == "None" ? document.getElementById('waktuKepulangan').value = '' : document.getElementById('waktuKepulangan').value = result.data.departureTime
 
       //assign sign image
       document.getElementById("ttd-preview").style.backgroundImage = `url(${urlData}uploads/ttd/${result.data.signImage})`
@@ -213,9 +245,12 @@ exampleForm.addEventListener("submit", function(e){
   var nik = document.getElementById('nikNumber').value
   var instansi =  document.getElementById('instansi').value
   var phone =  document.getElementById('phoneNumber').value
-  var kepKunjungan =  document.getElementById('kepKunjungan').value
-  var wKedatangan =  document.getElementById('waktuKedatangan').value
-  var wKepulangan =  document.getElementById('waktuKepulangan').value
+  var kepKunjungan = ''
+  if(document.getElementById('kepKunjungan').value == 'Lainnya'){
+    kepKunjungan = document.getElementById('kepKunjunganArea').value
+  }else{
+    kepKunjungan = document.getElementById('kepKunjungan').value
+  }
   //Obj of data to send in future like a dummyDb
 
   const data = { 
@@ -225,8 +260,6 @@ exampleForm.addEventListener("submit", function(e){
     institution:instansi,
     phoneNumber:String(phone).trim(),
     visitReason:kepKunjungan,
-    arrivalTime:wKedatangan,
-    departureTime:wKepulangan,
     ktpImage:String(ktpImage), //
     signImage:String(signImage)
   };
@@ -263,7 +296,7 @@ exampleForm.addEventListener("submit", function(e){
         }
         setTimeout(() => {
           window.location.replace("index.html")
-        }, 3000)
+        }, 1500)
     },
     complete: function (responseJSON) {
       document.getElementById("overlay").setAttribute("hidden", false);
@@ -280,14 +313,12 @@ exampleForm.addEventListener("submit", function(e){
     })        
     setTimeout(() => {
       window.location.replace("nda-form-edit.html")
-    }, 3000)        
+    }, 1500)        
     return false;
   });
 });
 
 // section library function
-
-$("select").selectric();
 $.uploadPreview({
   input_field: "#image-upload",   // Default: .image-upload
   preview_box: "#image-preview",  // Default: .image-preview
@@ -297,8 +328,6 @@ $.uploadPreview({
   no_label: false,                // Default: false
   success_callback: null          // Default: null
 });
-
-$("select").selectric();
 $.uploadPreview({
   input_field: "#ttd-upload",   // Default: .image-upload
   preview_box: "#ttd-preview",  // Default: .image-preview

@@ -1,5 +1,25 @@
 "use strict";
 
+const getCookie = (cookie_name) =>{
+  // Construct a RegExp object as to include the variable name
+  const re = new RegExp(`(?<=${cookie_name}=)[^;]*`);
+  try{
+    return document.cookie.match(re)[0];	// Will raise TypeError if cookie is not found
+  }catch{
+    return "Who Are You?";
+  }
+}
+$(".toggle-password").click(function() {
+
+  $(this).toggleClass("fa-eye fa-eye-slash");
+  var input = $($(this).attr("toggle"));
+  if (input.attr("type") == "password") {
+    input.attr("type", "text");
+  } else {
+    input.attr("type", "password");
+  }
+});
+
 var urlData = ''
 fetch("../env.json")
   .then(response => response.json())
@@ -18,9 +38,11 @@ userForm.addEventListener("submit", function(e){
     password: userPassword
   };  
   
-  let date = new Date();
-  date.setTime(date.getTime() + (1 * 24 * 60 * 60 * 1000));
-  const expires = "expires=" + date.toUTCString();
+  var now = new Date();
+  var time = now.getTime();
+  time += 3600 * 1000;
+  now.setTime(time);
+  var expires = "expires=" + now.toUTCString();
 
   $.ajax({
     url: `${urlData}user/login`,
@@ -33,7 +55,8 @@ userForm.addEventListener("submit", function(e){
     },
     success: function (result) {
         // element is div holding the ParticalView
-        if(result.error)
+        console.log(result)
+        if(result.error == true)
         {
           iziToast.error({
             title: 'Login Gagal',
@@ -42,22 +65,21 @@ userForm.addEventListener("submit", function(e){
           }) 
           setTimeout(() => {
             location.reload()
-          }, 3000)           
+          }, 1500)           
         }
         else{
           document.cookie = `session=Bearer ${result.data.token}; ${expires}`
-          document.cookie = `user name= ${result.data.name}`
-          document.cookie = `role= ${result.data.role}`
+          document.cookie = `user name= ${result.data.name}; ${expires}`
+          document.cookie = `role= ${result.data.role}; ${expires}`
+          if(getCookie('session') != 'Who Are You')
+          {
+            window.location.href  = 'index.html'
+          }
         }
           
     },
     complete: function (responseJSON) {
       document.getElementById("overlay").setAttribute("hidden", false);
-      if(document.cookie.length > 0 )
-      {
-        window.location.href  = 'index.html'
-        return true;
-      }
     },
     error: function (xhr, status, p3, p4) {
     }
