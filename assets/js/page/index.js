@@ -100,8 +100,21 @@ async function getData(urlData){
                   ` 
                     : 
                   `
-                    <button class="btn btn-primary btn-sm btn-icon mr-2" id="detailBtn" data-toggle="tooltip" title="Export PDF" onClick="guestById(${element.id})"><i class="fas fa-list-alt fa-sm" style=" color:white"></i></button>
-                    <button class="btn btn-info btn-sm btn-icon  mr-1" id="editBTn" data-toggle="tooltip" title="Edit" data-original-title="Edit" onClick="openEditForm(${element.id})"><i class="fas fa-pencil-alt fa-sm" style=" color:white"></i></button>
+                    <div>
+                      ${element.departureTime == null || element.departureTime == 'None'?
+                        `
+                          <button class="btn btn-primary btn-sm btn-icon mr-2" id="detailBtn" data-toggle="tooltip" title="Absen Pulang" onClick="AbsenConfirm(${element.id})"><i class="fas fa-bell fa-sm" style=" color:white"></i></button>
+                        `:
+                        `
+                          <button class="btn btn-primary btn-sm btn-icon mr-2" id="detailBtn" data-toggle="tooltip" title="Absen Pulang" onClick="AbsenConfirm(${element.id})" disabled><i class="fas fa-bell fa-sm" style=" color:white"></i></button>
+                        ` 
+                      }
+                      <a href="#" data-toggle="dropdown" class="btn btn-sm btn-info dropdown-toggle" aria-expanded="false">More</a>
+                      <ul class="dropdown-menu dropdown-menu-sm dropdown-menu-right" x-placement="bottom-end" style="position: absolute; transform: translate3d(75px, 31px, 0px); top: 0px; left: 0px; will-change: transform;">
+                        <li><a href="javascript:openEditForm(${element.id})" class="dropdown-item">Edit</a></li>
+                        <li><a href="javascript:guestById(${element.id})" class="dropdown-item">Export NDA</a></li>
+                      </ul>
+                    </div>
                   `
                 }
                 </div>
@@ -315,7 +328,6 @@ function guestById(id){
       element.sr_number = result.data.sr_number
       dataPrint.push(element)
 
-      console.log(dataPrint)
     },
     complete: function () {
       document.getElementById("overlay").setAttribute("hidden", false);      
@@ -335,9 +347,6 @@ function guestById(id){
   printPDF()
 }
 
-function absenPulang(){
-
-}
 function printPDF(){
   //Open new dialog window
   var myWindow=window.open('','','width=1200,height=1000');
